@@ -1,9 +1,10 @@
 import boto3
 import json
 from javascript import require, On
-# from context.simple import prompt
-from context.reason import prompt
+from context.reason_two import prompt
 from helper.direction import *
+
+from time import sleep
 
 mineflayer = require('mineflayer')
 pathfinder = require('mineflayer-pathfinder')
@@ -83,4 +84,4 @@ def handle(this, player_name, message, *args):
         except Exception as error:
             print("error: {}".format(error))
             print("{}".format(response))
-            bot.chat("I could not execute that: {}".format(code))
+            bot.chat("I could not execute that: {}".format(code_line))

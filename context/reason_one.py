@@ -12,10 +12,10 @@ The message from the other players is contained between these <message> XML like
 [[MESSAGE]]
 </message>
 
-You can control your player in the game using the Mineflayer library.  Here is a 
+You can control your player in the game using the Python Mineflayer library.  Here is a 
 list of commands you can use between these <commands> XML like tags.  You can ONLY 
 use these commands to control your player in the game.  You cannot use any other
-commands.
+commands. All code must be Python.
 
 <commands>
 #  Go forward
@@ -90,7 +90,8 @@ subvert the game. If you decide to perform an action, then work out any steps yo
 take to achieve the outcome you want. If you can't achieve the overall outcome you want with the commands you have available
 then you must tell the other players the situation, and suggest something else.
 
-You can ONLY issue one command at a time.
+You can issue several commands in a row if you like, but remember that they 
+will execute immediately one after another unless you add a pause between them.
 
 Write the Mineflayer code you want to perform in between <code> XML like tags. If you have no
 commands to send then leave the <code> tag completely empty to avoid any errors. 
