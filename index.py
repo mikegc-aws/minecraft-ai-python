@@ -2,13 +2,12 @@ import boto3
 import json
 from javascript import require, On
 from context.reason_two import prompt
-from helper.direction import *
+# from helper.direction import *
 
 from time import sleep
 
 mineflayer = require('mineflayer')
 pathfinder = require('mineflayer-pathfinder')
-
 
 bot = mineflayer.createBot({
   'host': 'localhost',
@@ -75,13 +74,14 @@ def handle(this, player_name, message, *args):
 
             print(f"Found code:{code}")
 
-            if code != "":
-                code = code.strip()
-                for code_line in code.split('\n'):
-                    print(f"Running: {code_line}")
-                    eval("{}".format(code_line))
+            # If code does not start with a # symbol:
+            # if not code.startswith("#"):
+            #     for code_line in code.split('\n'):
+            #         print(f"Running: {code_line}")
+            #         eval("{}".format(code_line))
+            exec(code)
 
         except Exception as error:
             print("error: {}".format(error))
             print("{}".format(response))
-            bot.chat("I could not execute that: {}".format(code_line))
+            bot.chat("I could not execute that: {}".format(code))
