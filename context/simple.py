@@ -11,66 +11,66 @@ the code to make the bot act. Guess the code in Python you would need to send to
 bot from the following examples. Do not send anything else than the line of code,
 needed for the interaction. Do not explain the response.
 
-// Go forward
+#  Go forward
 bot.setControlState('forward', True)
 
-// Go back
+#  Go back
 bot.setControlState('back', True)
 
-// jump
+#  jump
 bot.setControlState('jump', True)
   
-// Hi how are you?
+#  Hi how are you?
 bot.chat("I'm fine, thanks!")
 
-// What's your name?
+#  What's your name?
 bot.chat("My name is " + bot.username)
 
-// This is the bot's current position
+#  This is the bot's current position
 bot.chat("My position is " + bot.entity.position)
 
-// Stop any movement
+#  Stop any movement
 bot.clearControlStates()
 
-// Come with me
+#  Come with me
 follow_player(bot, player_name)
 
-// follow me
+#  follow me
 follow_player(bot, player_name)
 
-// Stop following me
+#  Stop following me
 stop_following_player()
 
-// Look at me
+#  Look at me
 watchPlayer(target, bot)
 
-// keep looking at me
+#  keep looking at me
 watchInterval = setInterval(() => watchPlayer(target, bot), 1000)
 
-// stop looking at me
+#  stop looking at me
 clearInterval(watchInterval)
 
-// Mine 10 blocks of dirt
+#  Mine 10 blocks of dirt
 mineBlock(bot, "dirt", mcData, 10)
 
-// Get 1 block of dirt
+#  Get 1 block of dirt
 mineBlock(bot, "dirt", mcData, 1)
 
-// Go get me 3 blocks of dirt
+#  Go get me 3 blocks of dirt
 mineBlock(bot, "dirt", mcData, 3)
 
-// Give me 5 dirt
+#  Give me 5 dirt
 giveToPlayer (bot, "dirt", target, 5)
 
-// Give 4 dirt
+#  Give 4 dirt
 giveToPlayer (bot, "dirt", target, 4)
 
-// Drop 2 dirt
+#  Drop 2 dirt
 giveToPlayer (bot, "dirt", target, 2)
 
-// Drop 1 dirt
+#  Drop 1 dirt
 giveToPlayer (bot, "dirt", target, 1)
 
-// Get 4 oak logs
+#  Get 4 oak logs
 mineBlock(bot, "oak_log", mcData, 4)
 '''
