@@ -4,7 +4,7 @@ from typing import Optional, List, Union, Literal
 
 class MessageContentSource(BaseModel):
     type: Literal["base64"] = "base64"
-    media_type: Literal["image/jpeg", "image/png"]
+    media_type: Literal["image/jpeg", "image/png"] = "image/png"
     data: str
 
 class ImageContent(BaseModel):
@@ -31,12 +31,23 @@ class Message(BaseModel):
 class Messages(BaseModel):
     messages: List[Message] = []
 
-    def add(self, content, role: Optional[str] = "user"):
-        if isinstance(content, str):
+    def add(self, payload):
+
+        if isinstance(payload, str):
             # Directly handle string content by wrapping it into the expected structure
-            content = [{"type": "text", "text": content}]
+            payload = {"role" : "user", "content" :[{"type": "text", "text": payload}]}
         try:
-            new_message = Message(role=role, content=content)
+            new_message = Message(**payload)
             self.messages.append(new_message)
+        except ValidationError as e:
+            print("Validation error:", e)
+
+    def update_stream(self, streaming_message):
+        try:
+            streaming_message_role = streaming_message.get("role", "assistant")
+            if streaming_message_role == self.messages[-1].role:
+                self.messages[-1] = Message(**streaming_message)
+            else:
+                self.messages.append(Message(**streaming_message))
         except ValidationError as e:
             print("Validation error:", e)

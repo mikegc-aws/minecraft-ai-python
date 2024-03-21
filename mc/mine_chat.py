@@ -9,6 +9,9 @@ class MineChat(Chat):
         # Now call the superclass's __init__ with the loaded system prompt
         super().__init__(system_prompt=system_prompt, **kwargs)
 
+    def __call__(self, *args, **kwargs):
+        return self.generate(*args, **kwargs)
+
     def extract_substring(self, text, trigger_str, end_str):
         last_trigger_index = text.rfind(trigger_str)
         if last_trigger_index == -1:
@@ -23,6 +26,6 @@ class MineChat(Chat):
         code = self.extract_substring(response, "<code>", "</code>")
         return code.strip()
 
-    def prompt(self, prompt: str):
-        response = super().prompt(prompt)
+    def generate(self, prompt: str):
+        response = super().generate(prompt)
         return self.parse_response(response)

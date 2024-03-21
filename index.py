@@ -1,64 +1,86 @@
-import boto3
-import json
+import logging
+import io
+import sys
 from javascript import require, On
 from mc.mine_chat import MineChat
-from time import sleep
+
+logging.basicConfig(filename='index.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 mineflayer = require('mineflayer')
 pathfinder = require('mineflayer-pathfinder')
-Vec3 = require('vec3').Vec3
+Vec3 = require('Vec3')
 
 bot = mineflayer.createBot({
-  'host': 'localhost',
-  'port': 58917,
-  'username':'Claude3',
-  'verbose': True,
-  'checkTimeoutInterval': 60 * 10000,
+    'host': 'localhost',
+    'port': 58917,
+    'username': 'Claude3',
+    'verbose': True,
+    'checkTimeoutInterval': 60 * 10000,
 })
 
 bot.loadPlugin(pathfinder.pathfinder)
-mcData = require('minecraft-data')(bot.version)
-mine_chat = MineChat(prompt_file_path="mine_prompt.txt")
-max_try = 5
-current_try = 0
+mine_chat = MineChat(prompt_file_path="meta_prompted.txt")
 
 @On(bot, 'spawn')
 def spawn(*args):
-  print("I spawned 👋")
-  
-@On(bot, "chat")
-def handle(this, player_name, message, *args):
-    
-    global current_try
-    global max_try
+    logging.info("I spawned 👋")
 
+def execute_arbitrary_code(code):
+    """Executes arbitrary code, captures stdout and stderr, including errors."""
+    original_stdout = sys.stdout
+    original_stderr = sys.stderr
+    output_buffer = io.StringIO()
+    sys.stdout = output_buffer
+    sys.stderr = output_buffer
+
+    result = ""
+
+    try:
+        exec(code)
+        result = output_buffer.getvalue()
+    except Exception as error:
+        result = f"Error encountered: {error}"
+    finally:
+        sys.stdout = original_stdout
+        sys.stderr = original_stderr
+        output_buffer.close()
+        return result
+
+def process_feedback(player_name, message, depth=0, max_depth=6):
+    if depth > max_depth:
+        logging.info("Max recursion depth reached.")
+        return
+    else: 
+        logging.info(f"Recursion depth {depth}.")
+    
+    if "<function_results>" in message:
+        formatted_message = f"{message}"
+    else: 
+        formatted_message = f"<message>Player {player_name}, says \"{message}\"</message>"
+
+    logging.info(f"{formatted_message}")
+
+    feedback = mine_chat(formatted_message)
+    
+    logging.info(f"Feedback code: {feedback}")
+
+    if feedback:
+        logging.info(f"Executing feedback code: {feedback}")
+        result = execute_arbitrary_code(feedback)
+        if result.strip():
+            result_formatted = f"<function_results>{result}<function_results>"
+            logging.info(f"Feedback result: {result_formatted}")
+            process_feedback(player_name, result_formatted, depth + 1, max_depth)
+        else:
+            logging.info("No feedback result.") 
+
+@On(bot, "chat")
+def handle_chat(_, player_name, message, *args):
     if player_name == bot.username:
         return
-    
-    else:
-        code = mine_chat.prompt(message)
-        try:
-            
-            current_try += 1
-            
-            print(f"Try: {current_try}")
-            print("-"*20)
-            print("code: {}".format(code))
 
-            # WARNING: this is a very dangerous way to execute code! Do you trust AI?
-            # Note: the code is executed in the context of the bot entity
-            exec(code)
+    process_feedback(player_name, message)
 
-            current_try = 0
-
-        except Exception as error:
-            print("*"*20)
-            print("error: {}".format(error))
-
-            if current_try < max_try:
-                bot.chat("There was an error running the code I came up with, I will try again.")
-                message_error = f"There was an error running that code. Here is the error:\n{error}\n\nFix the code and try again."
-                handle(this, player_name, message_error, *args)
-
-            else:
-                bot.chat("Error - giving up.")
+if __name__ == "__main__":
+    # Any initialization or run code should go here
+    pass
